@@ -15,11 +15,11 @@ export class CreateUserService {
 
     async execute(data: CreateUserInputDto) {
         try {
-            const usuario = await this.createUserRepository.verifyDuplicity(
-                data.email,
+            const user = await this.createUserRepository.verifyDuplicity(
+                data.e_mail,
             );
 
-            if (usuario) {
+            if (user) {
                 throw new BadRequestException(
                     'Usuário já criado com esse e-mail',
                 );
@@ -31,9 +31,7 @@ export class CreateUserService {
 
             await this.createUserRepository.createUser(id, data);
         } catch (error) {
-            if (error instanceof BadRequestException) {
-                throw error;
-            }
+            if (error instanceof BadRequestException) throw error;
             throw new InternalServerErrorException(
                 'Ocorreu um erro ao criar o usuário. Tente novamente!',
             );

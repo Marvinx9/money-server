@@ -52,17 +52,17 @@ describe('AuthService', () => {
             //Arrange
             const user: User = {
                 id: '1',
-                email: 'test@example.com',
-                nome: 'Test User',
-                perfil: 'user',
+                e_mail: 'test@example.com',
+                name: 'Test User',
+                profile: 'user',
                 password: 'hashedPassword',
             };
 
             const expectedResult: LoginOutputDto = {
                 access_token: 'fakeToken',
                 id: user.id,
-                email: user.email,
-                nome: user.nome,
+                e_mail: user.e_mail,
+                name: user.name,
             };
 
             jest.spyOn(jwtService, 'sign').mockReturnValue('fakeToken');
@@ -73,8 +73,8 @@ describe('AuthService', () => {
             //Assert
             expect(jwtService.sign).toHaveBeenCalledWith({
                 sub: user.id,
-                email: user.email,
-                nome: user.nome,
+                email: user.e_mail,
+                nome: user.name,
             });
             expect(result).toEqual(expectedResult);
         });
@@ -85,8 +85,8 @@ describe('AuthService', () => {
             //Arrange
             const user = {
                 id: 1,
-                email: 'test@example.com',
-                nome: 'Test User',
+                e_mail: 'test@example.com',
+                name: 'Test User',
                 password: 'hashedPassword',
             };
             const password = 'plainPassword';
@@ -96,11 +96,11 @@ describe('AuthService', () => {
             (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
             //Act
-            const result = await sut.validateUser(user.email, password);
+            const result = await sut.validateUser(user.e_mail, password);
 
             //Assert
             expect(validateUserService.execute).toHaveBeenCalledWith(
-                user.email,
+                user.e_mail,
             );
             expect(bcrypt.compare).toHaveBeenCalledWith(
                 password,
@@ -108,8 +108,8 @@ describe('AuthService', () => {
             );
             expect(result).toEqual({
                 id: user.id,
-                email: user.email,
-                nome: user.nome,
+                email: user.e_mail,
+                nome: user.name,
             });
         });
 
@@ -127,8 +127,8 @@ describe('AuthService', () => {
             //Arrange
             const user = {
                 id: 1,
-                email: 'test@example.com',
-                nome: 'Test User',
+                e_mail: 'test@example.com',
+                name: 'Test User',
                 password: 'hashedPassword',
             };
             jest.spyOn(validateUserService, 'execute').mockResolvedValue(user);
@@ -136,7 +136,7 @@ describe('AuthService', () => {
 
             //Act & Assert
             await expect(
-                sut.validateUser(user.email, 'wrongPassword'),
+                sut.validateUser(user.e_mail, 'wrongPassword'),
             ).rejects.toThrow(UnauthorizedException);
         });
     });

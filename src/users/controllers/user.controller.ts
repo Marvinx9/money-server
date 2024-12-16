@@ -14,7 +14,7 @@ export class UserController {
     constructor(private readonly createUserService: CreateUserService) {}
 
     @Post()
-    @ApiCreatedResponse()
+    @ApiCreatedResponse({ description: 'Usuário criado com sucesso' })
     @ApiBadRequestResponse({ description: 'Usuário já criado com esse e-mail' })
     @ApiInternalServerErrorResponse({
         description: 'Ocorreu um erro ao criar o usuário. Tente novamente!',

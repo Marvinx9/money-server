@@ -8,11 +8,11 @@ export class LoginOutputDto {
     id: string;
 
     @ApiProperty({ description: 'nome do usuário', example: 'usuario.exemplo' })
-    nome: string;
+    name: string;
 
     @ApiProperty({
         description: 'email do usuário',
         example: 'usuario@gmail.com',
     })
-    email: string;
+    e_mail: string;
 }

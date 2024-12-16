@@ -5,8 +5,8 @@ import { ValidateUserRepository } from '../../repository/validateUser.repository
 export class ValidateUserService {
     constructor(private validateUserRepository: ValidateUserRepository) {}
 
-    async execute(email: string) {
-        const user = await this.validateUserRepository.findByEmail(email);
+    async execute(username: string) {
+        const user = await this.validateUserRepository.findByUsername(username);
 
         if (!user) {
             throw new UnauthorizedException('Usuário ou senha incorretos!');

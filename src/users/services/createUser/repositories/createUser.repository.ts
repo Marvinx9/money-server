@@ -6,15 +6,15 @@ import { CreateUserInputDto } from '../dto/createUserInput.dto';
 export class CreateUserRepository {
     constructor(private dataBaseService: DataBaseService) {}
 
-    async verifyDuplicity(email: string): Promise<number> {
+    async verifyDuplicity(e_mail: string): Promise<number> {
         const sql = `
         SELECT
             ID
-        FROM USUARIOS;
-        WHERE UPPER(EMAIL) = $1
+        FROM USERS
+        WHERE UPPER(E_MAIL) = $1
         `;
 
-        const binds = [email.toUpperCase()];
+        const binds = [e_mail.toUpperCase()];
 
         const result = await this.dataBaseService.query<{ id: number }>(
             sql,
@@ -26,25 +26,24 @@ export class CreateUserRepository {
 
     async createUser(id: string, data: CreateUserInputDto): Promise<void> {
         const sql = `
-        INSERT INTO USUARIOS
+        INSERT INTO USERS
         (
-            NOME,
-            SOBRENOME,
-            EMAIL,
+            NAME,
+            SURNAME,
+            E_MAIL,
             PASSWORD
         ) VALUES (
             $1,
             $2,
             $3,
-            $4,
-            $5
+            $4
         )
             `;
 
         const binds = [
-            data.nome.toUpperCase(),
-            data.sobrenome,
-            data.email,
+            data.name.toUpperCase(),
+            data.surname.toUpperCase(),
+            data.e_mail,
             data.password,
         ];
 

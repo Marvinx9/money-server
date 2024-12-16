@@ -2,8 +2,8 @@ import {
     Body,
     Controller,
     Get,
-    Param,
     Post,
+    Query,
     Req,
     UseGuards,
 } from '@nestjs/common';
@@ -20,7 +20,7 @@ import { Request } from 'express';
 import { FindTransactionService } from '../services/findTransactionBySearch/services/findTransaction.service';
 import { FindTransactionInputDto } from '../services/findTransactionBySearch/dto/findTransactionInput.dto';
 
-@Controller('transactions')
+@Controller('transaction')
 @ApiTags('Transactions')
 export class TransactionsController {
     constructor(
@@ -37,7 +37,11 @@ export class TransactionsController {
     @ApiInternalServerErrorResponse({
         description: 'Ocorreu um erro ao buscar a transação',
     })
-    async findTransaction(@Param() data: FindTransactionInputDto) {
+    async findTransaction(
+        @Query() data: FindTransactionInputDto,
+        @Req() req: Request,
+    ) {
+        data.usuario_id = +req.user?.id;
         return await this.findTransactionService.execute(data);
     }
 
@@ -51,9 +55,7 @@ export class TransactionsController {
         @Req() req: Request,
         @Body() data: CreateTransactionInputDto,
     ) {
-        data.usuario_id = data.usuario_id
-            ? data.usuario_id
-            : Number(req.user?.id);
+        data.user_id = data.user_id ? data.user_id : +req.user?.id;
 
         await this.createTransactionService.execute(data);
     }

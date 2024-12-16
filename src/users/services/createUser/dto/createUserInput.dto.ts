@@ -8,7 +8,7 @@ export class CreateUserInputDto {
     })
     @IsString()
     @IsNotEmpty()
-    nome: string;
+    name: string;
 
     @ApiProperty({
         description: 'sobrenome do usuário',
@@ -16,7 +16,7 @@ export class CreateUserInputDto {
     })
     @IsString()
     @IsNotEmpty()
-    sobrenome: string;
+    surname: string;
 
     @ApiProperty({
         description: 'email do usuário',
@@ -24,7 +24,7 @@ export class CreateUserInputDto {
     })
     @IsString()
     @IsNotEmpty()
-    email: string;
+    e_mail: string;
 
     @ApiProperty({ description: 'senha do usuário', example: 'jonas123' })
     @IsString()

@@ -5,23 +5,26 @@ import { DataBaseService } from 'src/shared/database/postgres/database.service';
 export class ValidateUserRepository {
     constructor(private readonly dataBaseService: DataBaseService) {}
 
-    async findByEmail(
-        email: string,
-    ): Promise<{ id: number; nome: string; email: string; password: string }> {
+    async findByUsername(
+        username: string,
+    ): Promise<{ id: number; name: string; e_mail: string; password: string }> {
         const sql = `
             SELECT
                 ID,
-                NOME,
-                EMAIL,
+                NAME,
+                E_MAIL,
                 PASSWORD
-            FROM USUARIOS WHERE UPPER(EMAIL) = $1
+            FROM USERS
+            WHERE (
+              UPPER(E_MAIL) = $1 
+              OR UPPER(NAME) = $1
+            )
         `;
-        const binds = [email.toUpperCase()];
-
+        const binds = [username.toUpperCase()];
         const result = await this.dataBaseService.query<{
             id: number;
-            nome: string;
-            email: string;
+            name: string;
+            e_mail: string;
             password: string;
         }>(sql, binds);
 

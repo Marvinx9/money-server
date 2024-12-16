@@ -21,20 +21,20 @@ export class AuthService {
         const payload: UserPayload = {
             sub: user.id,
             id: user.id,
-            email: user.email,
-            nome: user.nome,
+            e_mail: user.e_mail,
+            name: user.name,
         };
 
         return {
             access_token: this.jwtService.sign(payload),
             id: user.id,
-            email: user.email,
-            nome: user.nome,
+            e_mail: user.e_mail,
+            name: user.name,
         };
     }
 
-    async validateUser(email: string, password: string) {
-        const user = await this.validateUserService.execute(email);
+    async validateUser(username: string, password: string) {
+        const user = await this.validateUserService.execute(username);
 
         if (user) {
             const isPasswordValid = await compare(password, user.password);

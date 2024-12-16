@@ -13,21 +13,21 @@ export class FindTransactionRepository {
         const sql = `
             SELECT
                 ID,
-                DESCRICAO,
-                PRECO,
-                CATEGORIA,
+                USER_ID,
+                TITLE,
+                AMOUNT,
+                CATEGORY,
+                TYPE,
                 CREATED_AT
             FROM TRANSACTIONS
-            WHERE DELETED_AT IS NULL
-            AND ID_USUARIO = $1
-            AND 
-            (
-            UPPER(DESCRICAO) LIKE '%$1%' OR UPPER(CATEGORIA) LIKE '%$1%'
+            WHERE USER_ID = $1
+             AND (
+              UPPER(CATEGORY) LIKE '%' || UPPER($2) || '%' 
+              OR UPPER(TITLE) LIKE '%' || UPPER($2) || '%'
             )
         `;
 
         const binds = [data.usuario_id, data.search?.toUpperCase() ?? ''];
-
         return await this.dataBaseService.query(sql, binds);
     }
 }

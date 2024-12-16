@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     Injectable,
     InternalServerErrorException,
     Logger,
@@ -16,6 +17,15 @@ export class CreateTransactionService {
 
     async execute(data: CreateTransactionInputDto) {
         try {
+            const user = await this.createTransactionRepository.findUserById(
+                data.user_id,
+            );
+
+            if (!user) {
+                throw new BadRequestException('Usuário não existe');
+            }
+            data.type = data.type === 'deposit' ? 'D' : 'W';
+
             await this.createTransactionRepository.addTransaction(data);
         } catch (error) {
             this.logger.debug(error);
