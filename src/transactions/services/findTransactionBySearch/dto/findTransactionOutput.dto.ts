@@ -4,15 +4,21 @@ export class FindTransactionOutputDto {
     @ApiProperty({ description: 'identificador da transação' })
     id: number;
 
-    @ApiProperty({ description: 'descrição da transação' })
-    descricao: string;
+    @ApiProperty({ description: 'identificador do usuário' })
+    user_id: number;
+
+    @ApiProperty({ description: 'título da transação' })
+    title: string;
 
     @ApiProperty({ description: 'valor da transação' })
-    preco: number;
+    amount: number;
 
     @ApiProperty({ description: 'categoria da transação' })
-    categoria: string;
+    category: string;
 
-    @ApiProperty({ description: 'data dew criação da transação' })
-    created_at: number;
+    @ApiProperty({ description: 'tipo de transação' })
+    type: string;
+
+    @ApiProperty({ description: 'data de criação da transação' })
+    created_at: Date;
 }
