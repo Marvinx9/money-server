@@ -43,9 +43,9 @@ export class CreateTransactionRepository {
 
         const binds = [
             data.user_id,
-            data.title.toUpperCase(),
+            data.title?.toUpperCase(),
             data.amount,
-            data.category.toUpperCase(),
+            data.category?.toUpperCase(),
             data.type,
         ];
 

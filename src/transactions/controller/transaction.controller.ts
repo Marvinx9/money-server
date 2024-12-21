@@ -56,7 +56,6 @@ export class TransactionsController {
         @Body() data: CreateTransactionInputDto,
     ) {
         data.user_id = data.user_id ? data.user_id : +req.user?.id;
-
         await this.createTransactionService.execute(data);
     }
 }

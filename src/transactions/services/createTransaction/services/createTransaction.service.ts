@@ -29,6 +29,7 @@ export class CreateTransactionService {
             await this.createTransactionRepository.addTransaction(data);
         } catch (error) {
             this.logger.debug(error);
+            if (error instanceof BadRequestException) throw error;
             throw new InternalServerErrorException(
                 'Ocorreu um erro ao realizar a transação',
             );
