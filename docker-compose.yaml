@@ -1,7 +1,7 @@
 networks:
   db-network:
     driver: bridge
-  docunder-network:
+  money-network:
     driver: bridge
 
 volumes:
@@ -29,3 +29,37 @@ services:
       start_period: 80s
     ports:
       - ${DB_PORT}:5432
+
+  backend:
+    build:
+        context: "./"
+    container_name: money-backend
+    restart: always
+    command: ./docker-entrypoint.sh
+    networks:
+      - money-network
+      - db-network
+    environment:
+      - JWT_SECRET
+      - NODE_ENV
+    ports:
+      - 8080:8080
+      - 5555:5555
+    depends_on:
+      - postgres
+
+  frontend:
+    build:
+        context: "../money-client/"
+    container_name: money-frontend
+    restart: always
+    networks:
+      - money-network
+    environment:
+      - API_ENDPOINT
+      - API_PORT
+      - PORT=3001
+    ports:
+      - 3001:3001
+    depends_on:
+      - backend
