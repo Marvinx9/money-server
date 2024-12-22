@@ -1,7 +1,5 @@
-# Estágio de compilação
-
 FROM node:20.14.0-alpine AS builder
-
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 COPY package*.json yarn.lock /app/
@@ -12,15 +10,21 @@ COPY . /app
 
 RUN yarn build
 
-# Estágio de produção
-
 FROM node:20.14.0-alpine AS prod
-
 WORKDIR /app
 
-COPY --from=builder /app/dist ./dist
+RUN addgroup -g 1001 -S production
+RUN adduser -S backend -u 1001
+
+COPY package*.json ./
+COPY tsconfig.json ./
 COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
 
-EXPOSE 8080
+# COPY --chown=backend:production docker-entrypoint.sh ./
 
-CMD [ "node", "dist/main.js" ]
+USER backend
+EXPOSE ${PORT}
+EXPOSE ${DB_PORT}
+
+CMD ["node", "dist/main.js"]
