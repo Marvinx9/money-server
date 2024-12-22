@@ -1,0 +1,78 @@
+version: '3.8'
+
+networks:
+    db-network:
+        driver: bridge
+    money-network:
+        driver: bridge
+
+services:
+    postgres:
+        container_name: postgres
+        image: postgres:16.2-alpine3.19
+        restart: always
+        shm_size: 128mb
+        volumes:
+            - 'users-postgres:/var/lib/postgresql/data'
+        networks:
+            - db-network
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_DB=postgres
+            - POSTGRES_PASSWORD=postgres
+            - DB_PORT=5432
+            - PORT=8080
+            - DB_HOST=postgres
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -U postgres -d postgres']
+            interval: 30s
+            timeout: 60s
+            retries: 5
+            start_period: 80s
+        ports:
+            - 5432:5432
+
+    backend:
+        container_name: money-backend
+        build:
+            context: './'
+        restart: always
+
+        # command: ./docker-entrypoint.sh
+        environment:
+            - POSTGRES_USER=postgres
+            - DB_HOST=postgres
+            - POSTGRES_DB=postgres
+            - POSTGRES_PASSWORD=postgres
+            - DB_PORT=5432
+            - JWT_SECRET=dolcjiodvdhjdkvhjkad
+            - PORT=8080
+            - DB_LOGGING=true
+        networks:
+            - money-network
+            - db-network
+        ports:
+            - 8080:8080
+        depends_on:
+            - postgres
+
+    frontend:
+        container_name: money-frontend
+        build:
+            context: '../money-client/'
+        restart: always
+        networks:
+            - money-network
+        environment:
+            - MODE=development
+            - API_URL_PRODUCTION=meu-dominio
+            - API_URL_DEVELOPMENT=http://backend:8080/
+            - API_ENDPOINT=backend
+            - API_PORT=3000
+        ports:
+            - 3000:3000
+        depends_on:
+            - backend
+
+volumes:
+    users-postgres:
