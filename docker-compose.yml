@@ -1,73 +1,41 @@
-networks:
-    db-network:
-        driver: bridge
-    money-network:
-        driver: bridge
-
+version: '3.8'
 services:
-    postgres:
-        container_name: postgres
-        image: postgres:16.2-alpine3.19
-        restart: always
-        shm_size: 128mb
-        volumes:
-            - 'users-postgres:/var/lib/postgresql/data'
-        networks:
-            - db-network
+    api:
+        build: .
+        ports:
+            - '${PORT}:8080'
+        environment:
+            DB_HOST: ${DB_HOST}
+            DB_PORT: ${DB_PORT}
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+            POSTGRES_DB: ${POSTGRES_DB}
+        depends_on:
+            - db
+
+    db:
+        image: postgres:13
         environment:
             POSTGRES_USER: ${POSTGRES_USER}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
             POSTGRES_DB: ${POSTGRES_DB}
-        healthcheck:
-            test: ['CMD-SHELL', 'pg_isready -U postgres -d postgres']
-            interval: 30s
-            timeout: 60s
-            retries: 5
-            start_period: 80s
         ports:
-            - ${DB_PORT}:5432
+            - '5432:5432'
+        volumes:
+            - db_data:/var/lib/postgresql/data
 
-    backend:
-        container_name: money-backend
-        build:
-            context: './'
-        restart: always
-        # command: ./docker-entrypoint.sh
-        environment:
-            - POSTGRES_USER
-            - DB_HOST
-            - POSTGRES_DB
-            - POSTGRES_PASSWORD
-            - DB_PORT
-            - JWT_SECRET
-            - PORT
-            - DB_LOGGING
-        networks:
-            - money-network
-            - db-network
+    client:
+        build: ../money-client/
         ports:
-            - 3000:3000
-        depends_on:
-            - postgres
-
-    frontend:
-        container_name: money-frontend
-        build:
-            context: '../money-client/'
-        restart: always
-        networks:
-            - money-network
+            - '${CLIENT_PORT}:3000'
         environment:
-            - MODE
-            - API_URL_PRODUCTION
-            - API_URL_DEVELOPMENT
-            - API_ENDPOINT
-            - API_PORT
-            - PORT=3001
-        ports:
-            - 3001:3001
+            MODE: ${MODE}
+            API_URL_PRODUCTION: ${API_URL_PRODUCTION}
+            API_URL_DEVELOPMENT: ${API_URL_DEVELOPMENT}
+            API_ENDPOINT: ${API_ENDPOINT}
+            CLIENT_PORT: ${CLIENT_PORT}
         depends_on:
-            - backend
+            - api
 
 volumes:
-    users-postgres:
+    db_data:

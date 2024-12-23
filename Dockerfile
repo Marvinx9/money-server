@@ -1,30 +1,15 @@
-FROM node:20.14.0-alpine AS builder
-RUN apk add --no-cache libc6-compat
+FROM node:18
+
 WORKDIR /app
 
-COPY package*.json yarn.lock /app/
+COPY package*.json yarn.lock ./
 
-RUN yarn install --frozen-lockfile
+RUN yarn install
 
-COPY . /app
+COPY . .
 
 RUN yarn build
 
-FROM node:20.14.0-alpine AS prod
-WORKDIR /app
+EXPOSE 8080
 
-RUN addgroup -g 1001 -S production
-RUN adduser -S backend -u 1001
-
-COPY package*.json ./
-COPY tsconfig.json ./
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-
-# COPY --chown=backend:production docker-entrypoint.sh ./
-
-USER backend
-EXPOSE ${PORT}
-EXPOSE ${DB_PORT}
-
-CMD ["node", "dist/main.js"]
+CMD ["yarn", "start:prod"]
